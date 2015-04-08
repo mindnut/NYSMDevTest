@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Event Calendar module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function event_calendar_install() {
+  
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function event_calendar_uninstall() {
+  // Delete all the pathauto variables and then clear the variable cache
+  db_query("DELETE FROM {variable} WHERE name LIKE 'event_calendar_%'");
+  cache_clear_all('variables', 'cache');
+}

@@ -1,0 +1,48 @@
+.lecture, label[for=edit-field-event-category-value-lecture] {color:#00C618; }
+.music, label[for=edit-field-event-category-value-music]{color:#A600A6;}
+.children, label[for=edit-field-event-category-value-children039s-program] {color:#fa9f00;}
+.film, label[for=edit-field-event-category-value-film]{color:#d8cc11;}
+.tour, label[for=edit-field-event-category-value-guided-tour]{}
+.special, label[for=edit-field-event-category-value-special-event]{color:#FF0000;}
+
+//.page-programs .sidebar-first{@media (min-width:480px) {margin-top:5.5em;} }
+
+.calendar-list {
+    .views-row{ @include nicebox(.5em, .7em);
+    h2 {@include nysm-title(20); font-weight:normal; min-height:52px; margin-top:.5em;}
+    .program_cat{font-size: emCalc(12); text-transform: uppercase;}
+    .program_date{font-size: emCalc(14); font-weight: bold; line-height:emCalc(24); color:#454545;}
+    .program_location {font-size: emCalc(14); line-height:emCalc(24);  color:$nysm_blue;}
+    .program_body{ p {font-size: emCalc(12); line-height:emCalc(24);}}
+    .field-name-field-event-series {font-size:emCalc(12); margin-bottom:3px; color:#454545; font-weight:bold;text-transform: uppercase;}
+
+
+  }
+  .featured {background:rgba(255, 255, 255, 0.6) image-url('featured75.png') top right no-repeat; padding:1.5em .7em 1.5em .7em; }
+  h3 { color:#ababab; font-size:emCalc(13); text-align: right; }
+}
+
+.sortby_category {
+  input[type=checkbox]{margin:7px 0 0 0;}
+  .views-widget label {font-size: emCalc(12);font-weight: normal;}
+}
+ .program-node {
+   h2 {margin-top:0px;  }
+   .programdetail_category{ text-transform: uppercase; margin-top:15px;}
+    .programdetail_date{ font-weight: bold; margin-bottom:4px; color:#454545;}
+    .programdetail_location { margin-bottom:5px;  color:$nysm_blue;}
+    .programdetail_body{margin-top:10px; }
+    .field-name-field-cost {font-style: italic;}
+
+  // .group-repeat{
+ //     h3 {font-size:emCalc(14);}
+  //  }
+ }
+ .date-nav { h3 {display:none;}}
+
+ .event-list { @include nicebox(.5em, .7em);
+  .list-item {padding:8px 0 8px 0; border-bottom: dotted 1px #dbdbdb;
+    h3 {margin:0; font-weight:normal;}
+    .date-display-single {font-size:emCalc(13);}
+}
+ }

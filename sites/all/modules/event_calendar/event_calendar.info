@@ -1,0 +1,12 @@
+name = Event Calendar Phil Orchestra
+description = Provides a views style plugin for Event Calendar.
+core = 7.x
+package = Event Calendar
+version = "7.x-1.2"
+php = 5.2
+
+; configure = admin/config/user-interface/event-calendar
+dependencies[] = php
+dependencies[] = date_popup
+dependencies[] = better_exposed_filters
+dependencies[] = views_ui

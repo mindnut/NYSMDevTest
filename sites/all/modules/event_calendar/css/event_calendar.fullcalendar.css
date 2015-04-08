@@ -1,0 +1,68 @@
+div.event-calendar .fc-view {
+  overflow: visible;
+}
+div.event-calendar .fc-view:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+/* IE6 */
+* html div.event-calendar .fc-view {
+  height: 1%;
+}
+/* IE7 */
+*:first-child + html div.event-calendar .fc-view {
+  min-height: 1%;
+}
+.fc-event-default.featured,
+.fc-event-default.featured .fc-event-skin,
+.fc-event-default.featured .fc-event-time,
+.fc-event-default.featured a {
+  border-color: #f00;
+  border-style: solid;
+  background-color: #f00;
+  color: #fff;
+}
+.tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 220px;
+  margin: 0 0 0 -110px;
+  padding: 0 0 17px;
+}
+.tooltip .tooltip-holder {
+  position: relative;
+  padding: 25px;
+  background-color: rgba(0, 0, 0, 0.85);
+  -webkit-box-shadow: 0 0 7px 0 #000;
+    -moz-box-shadow: 0 0 7px 0 #000;
+         box-shadow: 0 0 7px 0 #000;
+  -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+        border-radius: 5px;
+}
+.tooltip .tooltip-holder:after {
+  top: 100%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+.tooltip .tooltip-holder:after {
+  border-color: rgba(0, 0, 0, 0);
+  border-top-color: rgba(0, 0, 0, 0.85);
+  border-width: 15px;
+  left: 50%;
+  margin-left: -15px;
+}
+.tooltip a {
+  background: none !important;
+  color: #fff;
+  text-decoration: none;
+  border: none !important;
+}

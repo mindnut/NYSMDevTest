@@ -1,0 +1,115 @@
+// Non-modular or client styles for .l-header region.
+
+.l-header {display:block; 
+// background:$nysm_blue;
+  width:100%;
+  .nysmshield img{
+  float:left;
+//  border: 1px solid $nysm_yellow;
+ // border-bottom: 2px solid $nysm_yellow;
+  background:$nysm_blue;
+  overflow: hidden;
+  margin: 0 8px 0 0;
+ @media (max-width:610px){display:none;}
+  }
+}
+
+.toplinks {
+    width:100%;
+ //   @include background-image(linear-gradient(#fefefe, #ffffff));
+  height: 20px;
+    padding:0;
+  //  margin:0 0 20px 0;
+     @include breakpoint(mobile){display:none;}
+      ul.menu {
+        @include breakpoint(all-mobile){display:none;}
+      margin: 0 0 0 0;
+      float: right;
+        li {
+        display: inline;
+        margin: 0px 5px 0 5px;
+        font-size:emCalc(12);
+        }
+      .leaf a {
+      font-size:0.91666667em;
+     
+      }
+    }
+    .social {
+  float: right;
+  width: 100px;
+  margin: 4px 0 0 10px;
+}
+.social img {
+  float: left;
+  margin: 0 2px 0 2px;
+  width: 20px;
+  height: 20px;
+   @include transition-property(opacity);
+   @include transition-duration(.2s); 
+   @include transition-timing-function(ease-in);
+   &:hover {@include opacity(0.8); };
+
+}
+  }
+
+ .logo {
+  margin: 0 auto;
+  padding: 18px 0px 8px 0px; 
+      max-width: $row-width;
+      margin: 0 auto;  
+ 
+
+}
+
+
+// Top Bar
+//--------------------------------------------------
+.nysmnav {
+  background: white image-url('menu-shadow.png') bottom repeat-x;
+  border-top: 1px solid $nysm_yellow;
+  padding-bottom: 2px;
+}
+
+.top-bar {
+  .title-area {}
+
+
+
+  ul.main-nav li {
+    border-right:1px dotted #fbfbfb;
+    &.last {border-right:none;}
+  & a{
+  	padding-bottom:-2px;
+  	border-bottom: 2px solid transparent;
+  @include transition-property(border);
+   @include transition-duration(.2s); 
+   @include transition-timing-function(ease-in);
+  	&:hover {
+  		border-bottom: 2px solid $nysm_blue;
+  	}
+    // Apply the active link color when it has that class
+    &.active {
+        border-bottom: 2px solid $nysm_blue;
+        background:none;
+        color:#545454;
+      }
+    &.active-trail {border-bottom: 2px solid $nysm_blue;}
+    
+}
+  }
+//  .has-dropdown > a::after {display:none; margin-right:0px !important; }
+//  .has-dropdown > a { margin-right:0px !important; }
+
+
+   ul.dropdown, .dropdown, ul.dropdown li { @media (min-width:610px){display:none;};
+
+  }
+}
+
+.top-bar-section {}
+.top-bar-section .left {}
+.top-bar-section .right {}
+
+
+ 

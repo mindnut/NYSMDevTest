@@ -1,0 +1,191 @@
+/* $Id$ */
+
+/**
+ * @file
+ * forDrupal superfish navbar CSS.
+ * Copyright 2010 forDrupal. All rights reserved.
+ */
+
+@import "superfish_base";
+
+
+body {
+  &.page-taxonomy-term-25{.researchcollectionnav {margin-bottom:12px;  @media (max-width:750px){ margin-bottom:0;}}}
+ &.page-taxonomy-term-41, .page-taxonomy-term-25 {.researchcollectionnav {margin-bottom:0px}}
+  & .researchcollectionnav {margin-bottom:25px; @media (max-width:750px){ margin-bottom:0;}
+ }
+}
+
+
+
+/*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
+ul.sf-navbar {
+  width:100%;
+  height: 25px;
+  background: #585858;
+  position: relative;
+  
+  li {
+    position: static;
+  }
+  li {
+    &.current,
+    &:hover,
+    &.sfHover,
+    li.current {
+    a {color:green;}
+      ul { background: $researchnav_green; top:25px; line-height:1em; border-top: 1px solid #dbdbdb; border-left:solid 3px #585858; z-index:100;
+        ul {display:none;}
+      }
+      background: white; /*style for 1st level active */
+    }
+
+    ul {
+      width: 100%;     /*IE6 soils itself without this*/
+    }
+    li {
+      /*style for inactive 2nd row */
+      position: relative;
+      ul {
+        width: $sf-item-width;
+      }
+      li {
+        width: 100%;
+        &:hover, &.sfHover {
+         a{ color:white;}
+          background: $sf-hover-background;
+        }
+      }
+    }
+  }
+  ul li {
+    width: auto;
+    float: left;
+    &:hover,
+    &.sfHover {
+      background: white;  /* 2nd level active box */
+      
+    }
+    &:hover li,
+    &.sfHover li {
+
+      background: $researchnav_green;
+    }
+    li a {
+      &:focus,
+      &:hover,
+      &:active {
+
+        background: $researchnav_green;
+
+      }
+    }
+    &:hover ul,
+    &.sfHover ul {
+      left: 0;
+      top: 25px;      /* 3rd level match top ul list item height */
+    }
+    .current ul ul {
+      @include sf_hide;
+    }
+
+    & ul{display:none;}
+  }
+  a {
+    color:white;
+    height: 25px;
+    padding: 7px 1em;
+    font-size:emCalc(12);
+    font-family:"gothambook";
+    @media (max-width:855px){ font-size:emCalc(11);}
+    line-height:12px;
+    &:focus,
+    &:hover,
+    &:active {
+      
+     // background: blue;  /*default font background */
+    }
+  }
+  ul a {
+    &:focus,
+    &:hover,
+    &:active  {
+    //  background: $sf-hover-background;  /*active hover 1st row text */
+    }
+  }
+  li li.current {
+
+    li.current {
+      background: $sf-active-background;
+      > a {
+        font-weight: bold;
+      }
+    }
+  }
+  ul {
+    .sf-sub-indicator {
+      @include sprite-position(2, 2, 10px, 100px);
+    }
+    a {
+      > .sf-sub-indicator {
+        @include sprite-position(1, 2, 10px, 100px);
+      }
+      &:focus > .sf-sub-indicator,
+      &:hover > .sf-sub-indicator,
+      &:active > .sf-sub-indicator {
+        @include sprite-position(2, 2, 10px, 100px);
+      }
+    }
+    li {
+
+      &:hover > a > .sf-sub-indicator,
+      &.sfHover > a > .sf-sub-indicator {
+       // @include sprite-position(2, 2, 10px, 100px);
+      }
+    }
+  }
+  .current ul {
+    left: 0;
+    top: 25px;    /* match top ul list item height */
+  }
+  > li > ul {
+    background: transparent;
+    padding: 0;
+  }
+}
+
+// .page-taxonomy-term-41, .page-taxonomy-term-74  {
+  //    ul.sf-navbar {
+
+
+       li#menu-2717-4, li#menu-2715-4 {
+          &.current,
+          &:hover,
+          &.sfHover,
+          li.current {
+              ul {background:white; 
+              //  border-left: #565656 10px solid;
+ @include box-shadow(#eee 0px 3px 2px 1px);
+   z-index:-1;
+   margin-bottom:6px;
+  padding-left:0px;
+        li a{font-size:emCalc(14);
+        padding-bottom:-2px;
+    border-bottom: 1px solid transparent;
+    border-right:1px dotted #efefef;
+    @include transition-property(border);
+   @include transition-duration(.2s); 
+   @include transition-timing-function(ease-in);
+    &:hover, &.active-trail,
+    &.sfHover {
+      border-bottom: 1px solid $researchnav_green;     
+    }
+          }}
+
+           }
+  //      }
+  //    }
+  }
+
+
+

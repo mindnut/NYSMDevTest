@@ -1,0 +1,4 @@
+name = Redcat Jquery Calendar Block
+description = Provides a jquery block function for the calendar 
+core = 7.x
+files[] = redcat_customizations.js

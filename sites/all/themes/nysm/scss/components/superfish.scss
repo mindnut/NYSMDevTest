@@ -1,0 +1,152 @@
+/* $Id$ */
+
+/**
+ * @file
+ * forDrupal superfish base CSS.
+ * Copyright 2010 forDrupal. All rights reserved.
+ */
+
+@import "superfish_base";
+
+.section-research-collections h1#page-title {margin-bottom:-5px;}
+
+
+
+/*** ESSENTIAL STYLES ***/
+ul.sf-horizontal, .sf-horizontal ul.menu {
+  @include sf_essential;
+}
+
+/*** BASIC SKIN ***/
+ul.sf-horizontal, .sf-horizontal ul.menu {
+  @media (max-width:730px){ display:none;}
+  float: left;
+  clear:all;
+  width:100%;
+  border-left: #565656 10px solid;
+ @include box-shadow(#eee 0px 3px 2px 1px);
+   z-index:-1;
+   margin-bottom:1em;
+  padding-left:0px;
+  background: white;
+  
+  a {
+ //   @include sf_border(1, 0, 0, 1);
+//    height: $sf-item-height;
+    height: 25px;
+    padding: 8px 1em;
+    font-size:emCalc(14);
+    line-height:12px;
+    color: green;
+    font-family:"gothambook";
+
+    
+  //  &:visited {
+  //    /* visited pseudo selector so IE6 applies text colour*/
+ //     color: $sf-font-color;
+
+  //  }
+    &:focus,
+    &:hover,
+    &:active {
+      // background: $sf-hover-background;
+      outline: 0;
+    }
+    &.sf-with-ul {
+      padding-right: $em-base + 10px;
+      min-width: 1px;     /* trigger IE7 hasLayout so spans position accurately */
+
+    }
+  }
+  li {
+    z-index:1;
+    background: $sf-background;
+    padding-bottom:-2px;
+    border-bottom: 1px solid transparent;
+    border-right:1px dotted #efefef;
+    @include transition-property(border);
+   @include transition-duration(.2s); 
+   @include transition-timing-function(ease-in);
+    li {
+      background: $sf-background;
+      li {
+        background: $sf-background;
+      }
+    }
+    &:hover, &.active-trail,
+    &.sfHover {
+      border-bottom: 1px solid $researchnav_green;
+      // background: $sf-hover-background;
+      outline: 0;
+      color: $sf-hover-font-color;
+    }
+  }
+}
+
+/*** arrows **/
+.sf-horizontal .sf-sub-indicator {
+  position: absolute;
+  display: block;
+  right: 14px;
+  top: $em-base;  /* IE6 only */
+  text-indent: -999em;
+  overflow: hidden;
+  /* 8-bit indexed alpha png. IE6 gets solid image only */
+  @include sprite-background('arrows-ffffff.png', 10px, 10px);
+  @include sprite-position(2, 2, 10px, 100px);
+/*  background: url('../images/arrows-ffffff.png') no-repeat -10px -100px;*/
+}
+
+a {
+  > .sf-sub-indicator {    /* give all except IE6 the correct values */
+    top: $sf-top-padding;
+    @include sprite-position(1, 2, 10px, 100px);
+  }
+  &:focus > .sf-sub-indicator,
+  &:hover > .sf-sub-indicator,
+  &:active > .sf-sub-indicator {
+    @include sprite-position(2, 2, 10px, 100px);
+  }
+}
+
+/* apply hovers to modern browsers */
+.sf-horizontal li {
+  &:hover > a > .sf-sub-indicator,
+  &.sfHover > a > .sf-sub-indicator {
+    @include sprite-position(2, 2, 10px, 100px);
+  }
+}
+
+/* point right for anchors in subs */
+.sf-horizontal ul {
+  @include opacity(.95);
+  .sf-sub-indicator {
+    @include sprite-position(2, 1, 10px, 100px);
+  }
+  a {
+    > .sf-sub-indicator {
+      @include sprite-position(1, 1, 10px, 100px);
+    }
+    &:focus > .sf-sub-indicator,
+    &:hover > .sf-sub-indicator,
+    &:active > .sf-sub-indicator {
+      @include sprite-position(2, 1, 10px, 100px);
+
+    }
+  }
+  li {
+    &:hover > a > .sf-sub-indicator,
+    &.sfHover > a > .sf-sub-indicator {
+      @include sprite-position(2, 1, 10px, 100px);
+    }
+  }
+}
+
+/*** shadows for all but IE6 ***/
+ .sf-shadow ul {
+  @include box-shadow;
+
+  &.sf-shadow-off {
+    background: transparent;
+  }
+}

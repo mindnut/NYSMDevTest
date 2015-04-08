@@ -1,0 +1,93 @@
+// Non-modular or client styles for the .l-content region.
+
+body {background:#fbfbfb image-url('nysm-background.png') 50% 0 no-repeat fixed;
+@include breakpoint(all-mobile) {background: #fbfbfb image-url('nysm-background.png') bottom right no-repeat fixed;
+@include background-size(cover)}
+}
+
+
+.page { }
+.l-main {min-height:100%; margin-bottom: 3em; }
+
+.highlighted-image {
+  background-position: fixed;
+  height: 350px;
+  margin: 0 auto;
+  padding: 0;
+  @include breakpoint(tablet){height:250px;}
+  @include breakpoint(mobile){height:200px;}
+
+} 
+.node {}
+.body {}
+.image {}
+.breadcrumb {width:100%; clear:both; background:none;}
+
+ul.breadcrumbs {padding:emCalc(5) 0 0 emCalc(10); margin-bottom:0;}
+/*
+ * SubNav Vertical style
+ */
+.pane-superfish {
+  h2{margin-bottom:0;
+    font-size:emCalc(16);
+    text-transform: uppercase;
+    border-bottom:1px #cdcdcd solid;
+    color:#454545;
+  }
+}
+
+.sf-vertical{
+width:100%;
+  li {
+  	width:100%;
+  	margin:0 0 9px 0;
+    padding: 0 0 9px 0;
+    text-transform: capitalize;
+    font-size:emCalc(13);
+    border-bottom:1px solid #e2e2e2;
+    
+    &.first{
+      a {font-size:emCalc(17);
+        font-weight: bold;
+        text-transform: uppercase;
+        color:#454545;
+        padding-bottom:6px;
+        } }
+ 
+    &:not(.first).active-trail {a {color:$nysm_blue;}}
+    &.last {}
+
+    &:hover ul,
+    &.sfHover ul {
+    text-decoration: underline;
+    }
+
+    a {
+      padding: 0 0;
+      color:#656565;
+      &:hover {color:$nysm_blue;}
+    }
+  }
+
+}
+
+.highlighted-story, .main-story, .other-news { @include nicebox(.5em, .7em);border-bottom:#e7e7e7 1px solid;
+ h2 {margin-bottom:0;}
+ .field-name-department-and-date{margin-bottom:.5em;font-size:emCalc(15);}
+ .body {font-size:emCalc(14);}
+}
+
+.about-rc { @include nicebox(.5em, .7em);
+  p {font-size: emCalc(14);} 
+  }
+.news-item {margin-bottom:1em; border-bottom:#e7e7e7 1px solid;
+  h2 {margin:0; font-size:emcalc(18);}
+};
+
+.right-image {
+  float:right;
+  padding: 0 0 .5em .5em;
+  clear:all;
+}
+
+

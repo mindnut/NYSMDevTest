@@ -1,0 +1,119 @@
+/* $Id$ */
+
+/**
+ * @file
+ * forDrupal Pop superfish _base CSS (CSS not generated, for inclusion only).
+ * Copyright 2010 forDrupal. All rights reserved.
+ */
+
+
+//--- variables definitions ---
+$sf-item-width:   120px !default;   // left offset of submenus need to match
+$sf-item-height: 25px !default;    // match top ul list item height
+
+$researchnav_green: #90dbab;
+
+
+$sf-top-padding:  10px;  // top padding for menu item, bottom padding calculated as (baseline - top padding)
+
+//--- colors definitions ---
+$sf-font-color:         $nysm_blue !default;
+$sf-background:         white !default;
+$sf-hover-background:   #ddd !default;
+$sf-hover-font-color:   white !default;
+$sf-active-font-color:  white !default;
+$sf-active-background:  $sf-hover-font-color !default;
+$sf-vert-border-color:  #fff !default;
+$sf-horz-border-color:  #fff !default;
+
+//--- mixins definitions ---
+@mixin sf_expand($side: down) {
+  @if $side == down {
+    left: 0;
+    top: $sf-item-height;
+  }
+  @else if $side == left {
+    left: $sf-item-width;
+    top: 0;
+  }
+}
+@mixin sf_hide {
+  top: -9999px;
+}
+
+@mixin sf_border($top: 0,  $right: 0, $bottom: 0, $left: 0) {
+  border: none;
+  @if $top    == 1 { border-top: 1px solid $sf-horz-border-color; }
+  @if $bottom == 1 { border-bottom: 1px solid $sf-horz-border-color; }
+  @if $left   == 1 { border-left: 1px solid $sf-vert-border-color; }
+  @if $right  == 1 { border-right: 1px solid $sf-vert-border-color; }
+}
+
+@mixin sf_essential {
+  line-height: 1.0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  * {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    display: block;
+    position: relative;
+  }
+  ul {
+    @include sf_hide;
+    position: absolute;
+    min-width: $sf-item-width !important;
+    li {
+      width: 100%;
+    }
+  }
+  li {
+    float: left;
+    position: relative;
+    &:hover,
+    &.sfHover {
+      list-style: none;
+      visibility: inherit;   /* fixes IE7 'sticky bug' */
+    }
+    &.leaf,
+    &.expanded {
+      list-style: none;
+      padding: 0;
+      &:hover,
+      &.sfHover {
+        list-style: none;
+      }
+    }
+  }
+  li {
+    &:hover ul,
+    &.sfHover ul {
+      @include sf_expand(down);
+      z-index: 99;
+    }
+    &:hover li ul,
+    &.sfHover li ul {
+      @include sf_hide;
+    }
+    li {
+      &:hover ul,
+      &.sfHover ul {
+        @include sf_expand(left);
+      }
+      &:hover li ul,
+      &.sfHover li ul {
+        @include sf_hide;
+      }
+      li {
+        &:hover ul,
+        &.sfHover ul {
+          @include sf_expand(left);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+// @file
+// Place your mixins here. Feel free to roll your own mixins. Or nuke what is
+// currently here.
+
+//
+// Mixin: Base Utility
+//
+@mixin stage {
+  position: absolute;
+  left: -999em;
+}
+
+@mixin unstage {
+  position: static;
+  left: auto;
+}
+
+@mixin breakpoint($point) {
+
+	 @if $point == all-mobile {
+    @media (max-device-width: 1024px)  { @content; }
+  }
+ @else if $point == tablet {
+    @media (max-width:1024px) { @content; }
+  }
+  @else if $point == mobile {
+    @media (max-width: 480px)  { @content; }
+  }
+  
+
+}
+
+
+@mixin nysm-title($sized: 16){ font-family: "gothambook"; font-size:emCalc($sized)}
+
+@mixin nicebox($botmargin:1em, $padding:.5em){margin-bottom:$botmargin; padding:$padding; border:1px #f2f2f2 solid; background:rgba(255, 255, 255, 0.6);}

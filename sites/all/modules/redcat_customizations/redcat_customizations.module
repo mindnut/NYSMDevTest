@@ -1,0 +1,318 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function redcat_customizations_block_info() {
+  $blocks['calendar-picker'] = array(
+    'info' => t('Calendar Picker'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['calendar-date-browser'] = array(
+    'info' => t('REDCAT Calendar Date Browser'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function redcat_customizations_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'calendar-picker':
+      // Add extra libraries
+      drupal_add_library('system', 'ui.datepicker');
+      drupal_add_js(drupal_get_path('module', 'redcat_customizations') .'/redcat_customizations.js');
+      drupal_add_css(drupal_get_path('module', 'date_popup')  .'/themes/datepicker.1.7.css');
+      drupal_add_css(drupal_get_path('module', 'redcat_customizations'). '/redcat_customizations.css');
+      
+      // Add the customized settings
+      $calendar_uri = url('programs', array('absolute' => TRUE));
+      $date = date('Y-m-d');
+      $month = date('Y-m');
+      $month_view_url = url("programs/$month");
+      $view = views_get_page_view();
+      if (!empty($view) && $view->name == 'redcat_calendar' && isset($view->args[0])) {
+        $date = date($view->args[0]);
+      }
+      $date = new DateObject($date);
+      drupal_add_js(array('redcat_event_base_uri' => $calendar_uri, 'redcat_event_dates' => _redcat_customizations_retrieve_event_dates()), 'setting');
+      drupal_add_js(array('redcat_event_default_date' => date_format_date($date, 'custom', 'm/d/Y')), 'setting');
+      
+      $block['subject'] = t('Calendar');
+      $block['content'] = "<div id='redcat-event-nojs'><a href=\"$calendar_uri\">Events this week</a> will be a link. You must have javascript enabled in order to use the date picker.<div><a id='redcat-datepicker-month-view' href='$month_view_url'>Current Month view</a></div></div><div id='redcat-datepicker'></div>";
+      break;
+    case 'calendar-date-browser':
+      $views_page = views_get_page_view();
+      if ($views_page && 'redcat_calendar' == $views_page->name) {
+        $date = arg(1);
+        $date = isset($date) ? $date : date('Y-m-d');
+        $block['subject'] = t('Date Browser');
+        if (strlen($date) > 7) {
+          $block['content'] = _redcat_customizations_views_post_week_build($date);
+        }
+        else {
+          $block['content'] = _redcat_customizations_views_post_month_build($date);
+        }
+      }
+      break;
+  }
+  return $block;
+}
+
+/********** CONTRIB CUSTOMIZATIONS **********/
+
+/**
+ * Implements hook_views_post_build().
+ */
+function redcat_customizations_views_post_build(&$view) {
+  if ($view->name == 'redcat_calendar' && $view->current_display == 'redcat-calendar-page') {
+    $date = isset($view->args[0]) ? $view->args[0] : date('Y-m-d');
+    if (strlen($date) > 7) {
+      $view->attachment_before = _redcat_customizations_views_post_week_build($date);
+    }
+    else {
+      $view->attachment_before = _redcat_customizations_views_post_month_build($date);
+    }
+  }
+  if ($view->name == 'discipline' && $view->current_display == 'entity_view_1') {
+    $term = taxonomy_term_load($view->args[0]);
+    $pattern = array(
+      ' ',
+      '/',
+    );
+    $replacement = array(
+      '-',
+      '',
+    );
+    $uri = 'event-archive/'. drupal_strtolower(str_replace($pattern, $replacement, $term->name));
+    $query_options = array();
+    if (module_exists('facetapi') && module_exists('apachesolr')) {
+      $searchers = facetapi_get_searcher_info();
+      foreach ($searchers as $searcher_key => $searcher) {
+        $facets = facetapi_get_enabled_facets($searcher_key);
+        foreach ($facets as $facet) {
+          if (isset($facet['field api name']) && $facet['field api name'] == 'field_content_event_type') {
+            $uri = 'search/site';
+            $query_options = array('f[0]' => $facet['field alias'] .':'. $term->tid);
+          }
+        }
+      }
+    }
+    $view->attachment_after = l(t('Search Event Archive'), $uri, array('attributes' => array('class' => array('column-more')), 'query' => $query_options));
+  }
+  if ($view->name == 'upcoming_galleries' && $view->current_display == 'page_1' && module_exists('facetapi') && module_exists('apachesolr')) {
+    $view->attachment_after = l(t('Gallery Exhibition Archive'), 'search/site', array('attributes' => array('class' => array('column-more')), 'query' => array('f[0]' => 'bundle:gallery_exhibition')));
+  }
+  if ($view->name == 'upcoming_theater_events' && $view->current_display == 'page_1' && module_exists('facetapi') && module_exists('apachesolr')) {
+    $view->attachment_after = l(t('Theater Events Archive'), 'search/site', array('attributes' => array('class' => array('column-more')), 'query' => array('f[0]' => 'bundle:redcat_event')));
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function redcat_customizations_views_pre_render(&$view) {
+  if ($view->name == 'frontpage_upcoming_events' && $view->current_display == 'page_1') {
+    $view->footer['area']->options['content'] = '<div class="column-more">'. l(t('ALL UPCOMING EVENTS'), 'theater') .'</div>';
+  }
+  if ($view->name == 'upcoming_galleries' && $view->current_display == 'block_1') {
+    $view->footer['area']->options['content'] = '<div class="column-more">'. l(t('ALL UPCOMING EXHIBITIONS'), 'gallery') .'</div>';
+  }
+}
+
+/**
+ * Show a week pager of the date range view.
+ */
+function _redcat_customizations_views_post_week_build($date) {
+  $date_range = _redcat_customizations_get_date_week_range($date);
+  
+  $prev_week = new DateObject($date .'-7 days');
+  $next_week = new DateObject($date .'+7 days');
+  
+  $content = '<div class="redcat-calendar-previous-week">'.
+    l(t('Previous Week'), 'calendar/'. date_format_date($prev_week, 'custom', 'Y-m-d'))
+    .'</div>';
+  $content .= '<div class="redcat-calendar-browse-label">';
+  $content .= t('<span class="redcat-calendar-browse-icon"> </span> Events from %date_from to %date_to',
+    array(
+      '%date_from' => date_format_date($date_range[0], 'custom', 'F j'),
+      '%date_to' => date_format_date($date_range[1], 'custom', 'F j'),
+    ));
+  $content .='</div>';
+  $content .= '<div class="redcat-calendar-next-week">'.
+    l(t('Next Week'), 'calendar/'. date_format_date($next_week, 'custom', 'Y-m-d'))
+    .'</div>';
+  $month = l('Month View', 'calendar/'. date_format_date($date_range[0], 'custom', 'Y-m'));
+  $content .= '<div class="redcat-calendar-switch-month">'. $month .'</div>';
+  return $content;
+}
+
+/**
+ * Show a week pager of the date range view.
+ */
+function _redcat_customizations_views_post_month_build($date) {
+  $date_range = _redcat_customizations_get_date_month_range($date);
+  $prev_month = new DateObject($date .' -1 month');
+  $next_month = new DateObject($date .' +1 month');
+  
+  $content = '<div class="redcat-calendar-previous-month">'.
+    l('Previous Month', 'calendar/'. date_format_date($prev_month, 'custom', 'Y-m'))
+    .'</div>';
+  $content .= '<div class="redcat-calendar-browse-label">';
+  $content .= t('<span class="redcat-calendar-browse-icon"> </span> Events from %date_from to %date_to',
+    array(
+      '%date_from' => date_format_date($date_range[0], 'custom', 'F j'),
+      '%date_to' => date_format_date($date_range[1], 'custom', 'F j'),
+    ));
+  $content .= '</div>';
+  $content .= '<div class="redcat-calendar-next-month">'.
+    l('Next Month', 'calendar/'. date_format_date($next_month, 'custom', 'Y-m'))
+    .'</div>';
+  return $content;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function redcat_customizations_views_query_alter(&$view, &$query) {
+  // Remember to add any other necessary conditions
+  // DEALING WITH CALENDAR
+  if ($view->name == 'redcat_calendar') {
+    // Figure out the date to resolve all this information for.
+    // Figure out the arguments if it is a block
+    if ($view->current_display == 'block_1') {
+      $date = arg(1);
+      $date = isset($date) ? $date : date('Y-m-d');
+    }
+    else {
+      $date = isset($view->args[0]) ? $view->args[0] : date('Y-m-d');
+    }
+    // Dealing with week view.
+    if (strlen($date) > 7) {
+      $date_range = _redcat_customizations_get_date_week_range($date);
+    }
+    // Dealing with month view.
+    else {
+      $date_range = _redcat_customizations_get_date_month_range($date);
+    }
+    $view->display_handler->default_display->options['title'] = t('REDCAT Events - From @start_date to @end_date',
+      array(
+        '@start_date' => date_format_date($date_range[0], 'custom', 'Y-m-d'),
+        '@end_date' => date_format_date($date_range[1], 'custom', 'Y-m-d'),
+      )
+    );
+    $where_key = array_keys($query->where);
+    $where_key = $where_key[0];
+    foreach($query->where[$where_key]['conditions'] as $key => $condition) {
+      if (is_array($condition['value'])) {
+        foreach ($condition['value'] as $field_name => $value) {
+          $query->where[$where_key]['conditions'][$key]['field'] = str_replace('SEC_TO_TIME(-25200)', 'SEC_TO_TIME(0)', $query->where[$where_key]['conditions'][$key]['field']);
+          if (strpos($field_name,':field_data_field_content_date_range_field_content_date_range_value2') === 0) {
+            $query->where[$where_key]['conditions'][$key]['value'][$field_name] = substr((string) $date_range[0], 0, 10);
+          }
+          else if (strpos($field_name,':field_data_field_content_date_range_field_content_date_range_value') === 0) {
+            $query->where[$where_key]['conditions'][$key]['value'][$field_name] = substr((string) $date_range[1], 0, 10);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Get a week range based on the date.
+ * @param date a date in the format 'Y-m-d'
+ */
+function _redcat_customizations_get_date_week_range($date = NULL) {
+  static $date_range;
+  if (!isset($date_range)) {
+    $date_range = array();
+  }
+  if (!isset($date)) {
+    $date = date('Y-m-d');
+  }
+  if (!isset($date_range[$date])) {
+    $date_object = new DateObject($date);
+    $temp_date_range = array();
+    $temp_date_range[] = _redcat_customizations_date_add_interval($date_object, '-'. date_format_date($date_object, 'custom', 'w') .' day');
+    $temp_date_range[] = _redcat_customizations_date_add_interval($temp_date_range[0], '+ 6 day');
+    $date_range[$date] = $temp_date_range;
+  }
+  
+  return $date_range[$date];
+}
+
+/**
+ * Get a week range based on the date.
+ * @param date a date in the format 'Y-m-d'
+ */
+function _redcat_customizations_get_date_month_range($date = NULL) {
+  static $date_range;
+  if (!isset($date_range)) {
+    $date_range = array();
+  }
+  if (!isset($date)) {
+    $date = date('Y-m-d');
+  }
+  if (!isset($date_range[$date])) {
+    $date_object = new DateObject($date);
+    $temp_date_range = array();
+    $temp_date_range[] = $date_object;
+    $temp_date_range[] = _redcat_customizations_date_add_interval($temp_date_range[0], ' + 1 month - 1 day');
+    $date_range[$date] = $temp_date_range;
+  }
+  
+  return $date_range[$date];
+}
+
+
+/**
+ * Add a time interval to a given date
+ */
+function _redcat_customizations_date_add_interval($date, $interval) {
+  $date_string = (string) $date ;
+  $date_object = new DateObject($date_string . $interval);
+  return $date_object;
+}
+
+
+/**
+ * Retrieve a list of dates.
+ */
+function _redcat_customizations_retrieve_event_dates() {
+  static $dates;
+ 
+  if (!isset($dates)){
+    $dates = array();
+    $cached_dates = cache_get('redcat_customizations_event_dates');
+    if (!empty($cached_dates)) {
+      $dates = $cached_dates->data;
+    }
+    else {
+      $default_timezone = new DateTimeZone(date_default_timezone(FALSE));
+ 
+      $field_info = field_info_field('field_event_date');
+      $table_info = $field_info['storage']['details']['sql']['FIELD_LOAD_CURRENT'];
+      foreach ($table_info as $key => $values) {
+        $table_name = $key;
+        $table_column = $values['value'];
+      }
+ 
+      $results = db_query("SELECT $table_column FROM {$table_name} WHERE entity_type = 'node' AND bundle = 'event' ORDER BY $table_column ASC");
+      foreach ($results as $result) {
+        $date_object = new DateObject($result->$table_column, 'UTC');
+        $date_object->setTimezone($default_timezone);
+        $year = date_format($date_object, 'Y');
+        $month = date_format($date_object, 'm');
+        $day = date_format($date_object, 'd');
+        $dates[$year][$month][$day] = $day;
+      }
+      cache_set('redcat_customizations_event_dates', $dates, 'cache', CACHE_TEMPORARY);
+    }
+  }
+  return $dates;
+}
